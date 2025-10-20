@@ -18,8 +18,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Restaurant Admin",
+  title: "Xiên Tới Đê - Quản Trị Nhà Hàng",
   description: "Restaurant Administration System",
+  icons: {
+    icon: '/logo.ico',
+  },
 };
 
 export default function RootLayout({
