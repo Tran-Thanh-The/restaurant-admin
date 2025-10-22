@@ -16,6 +16,10 @@ export async function GET() {
       username: user.username,
       role: user.role,
       fullName: user.fullName,
+      salary: user.salary,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      defaultSchedule: user.defaultSchedule,
       createdAt: user.createdAt.toISOString(),
       updatedAt: user.updatedAt.toISOString(),
     }));
@@ -40,7 +44,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { username, password, role, fullName } = body;
+  const { username, password, role, fullName, salary, email, phoneNumber, defaultSchedule } = body;
 
     if (!username || !password || !role || !fullName) {
       return NextResponse.json<ApiResponse>(
@@ -73,6 +77,10 @@ export async function POST(request: NextRequest) {
       password: hashedPassword,
       role,
       fullName,
+      salary: typeof salary === 'number' ? salary : undefined,
+      email: email || undefined,
+      phoneNumber: phoneNumber || undefined,
+      defaultSchedule: Array.isArray(defaultSchedule) ? defaultSchedule : undefined,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -84,6 +92,10 @@ export async function POST(request: NextRequest) {
       username: newUser.username,
       role: newUser.role,
       fullName: newUser.fullName,
+      salary: newUser.salary,
+      email: newUser.email,
+      phoneNumber: newUser.phoneNumber,
+      defaultSchedule: newUser.defaultSchedule,
       createdAt: newUser.createdAt.toISOString(),
       updatedAt: newUser.updatedAt.toISOString(),
     };

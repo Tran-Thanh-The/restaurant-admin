@@ -7,6 +7,12 @@ export interface User {
   password: string;
   role: 'admin' | 'manager' | 'staff';
   fullName: string;
+  // Optional extended fields
+  salary?: number; // monthly salary in VND
+  email?: string;
+  phoneNumber?: string;
+  // default work schedule for a week: Mon..Sun (1=work,0=off)
+  defaultSchedule?: number[]; // length 7 expected, but not required
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,6 +22,10 @@ export interface UserResponse {
   username: string;
   role: 'admin' | 'manager' | 'staff';
   fullName: string;
+  salary?: number;
+  email?: string;
+  phoneNumber?: string;
+  defaultSchedule?: number[];
   createdAt: string;
   updatedAt: string;
 }

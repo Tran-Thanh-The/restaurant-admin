@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useProducts } from "@/contexts/ProductsContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLoading } from "@/contexts/LoadingContext";
 import { useRouter } from "next/navigation";
 import { OrderResponse } from "@/types/database";
 import toast from "react-hot-toast";
@@ -16,6 +17,7 @@ export default function OrdersPage() {
   const { products } = useProducts();
   const { user } = useAuth();
   const router = useRouter();
+  const { startLoading, stopLoading } = useLoading();
 
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [showCreate, setShowCreate] = useState(false);
@@ -61,32 +63,49 @@ export default function OrdersPage() {
     setTotal(Number(totalPrice.toFixed(2)));
     // Tạo order
     if (!user) return toast.error("Không xác định người dùng!");
-    const res = await fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ createdBy: user.username, totalPrice: Number(totalPrice.toFixed(2)) }),
-    });
-    const order = await res.json();
-    if (!order.success) return toast.error("Tạo đơn thất bại!");
-    // Tạo order_items (không chặn UI)
-    Promise.all(
-      items.map((item) =>
-        fetch("/api/order-items", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            orderId: order.data._id,
-            productId: item.productId,
-            quantity: item.quantity,
-            price: products.find((p) => p._id === item.productId)?.price,
-          }),
-        })
-      )
-    ).then(() => {
+    const startedAt = Date.now();
+    startLoading();
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ createdBy: user.username, totalPrice: Number(totalPrice.toFixed(2)) }),
+      });
+      const order = await res.json();
+      if (!order.success) {
+        toast.error("Tạo đơn thất bại!");
+        return;
+      }
+      // Tạo order_items (chờ hoàn tất để đảm bảo tạo đơn xong hoàn toàn)
+      await Promise.all(
+        items.map((item) =>
+          fetch("/api/order-items", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              orderId: order.data._id,
+              productId: item.productId,
+              quantity: item.quantity,
+              price: products.find((p) => p._id === item.productId)?.price,
+            }),
+          })
+        )
+      );
+
       setShowResult(true);
       setShowCreate(false);
       toast.success("Tạo đơn thành công!");
-    });
+    } catch (e) {
+      console.error(e);
+      toast.error("Có lỗi khi tạo đơn");
+    } finally {
+      // Đảm bảo loading hiển thị tối thiểu 400ms để người dùng cảm nhận
+      const elapsed = Date.now() - startedAt;
+      if (elapsed < 400) {
+        await new Promise((r) => setTimeout(r, 400 - elapsed));
+      }
+      stopLoading();
+    }
   };
 
   // UI
