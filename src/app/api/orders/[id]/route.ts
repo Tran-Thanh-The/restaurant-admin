@@ -5,10 +5,10 @@ import { ObjectId } from "mongodb";
 // GET /api/orders/[id] - Lấy chi tiết đơn hàng
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json(
@@ -82,10 +82,10 @@ export async function GET(
 // DELETE /api/orders/[id] - Xóa đơn hàng
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json(

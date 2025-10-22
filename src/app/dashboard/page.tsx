@@ -56,7 +56,7 @@ export default function DashboardPage() {
             <div className="flex justify-between items-center py-4">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  Restaurant Admin Dashboard
+                  Xiên Tới Đê - Bảng Điều Khiển
                 </h1>
                 <p className="text-sm text-gray-600 mt-1">
                   Chào mừng trở lại, {user?.fullName}
@@ -184,10 +184,10 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Quick Actions */}
+          {/* Actions */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Chức năng nhanh
+              Chức năng
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Quản lý sản phẩm - Disabled for staff */}
