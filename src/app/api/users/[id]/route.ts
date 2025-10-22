@@ -8,10 +8,10 @@ export const runtime = 'nodejs';
 // DELETE - Remove a user by id
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const { db } = await connectToDatabase();
     const usersCol = db.collection<{ _id: ObjectId | string; role?: 'admin' | 'manager' | 'staff' }>('users');
@@ -49,10 +49,10 @@ export async function DELETE(
 // PUT - Update user (optional fields)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const body = await request.json();
     const { fullName, role, salary, email, phoneNumber, defaultSchedule } = body;
