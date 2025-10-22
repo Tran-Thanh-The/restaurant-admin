@@ -3,6 +3,8 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { OrderItem, OrderItemResponse, ApiResponse } from '@/types/database';
 
+export const runtime = "nodejs";
+
 // GET - Fetch order items (optionally filtered by orderId)
 export async function GET(request: NextRequest) {
   try {

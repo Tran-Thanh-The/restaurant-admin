@@ -3,6 +3,8 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { Order, OrderItem, ApiResponse } from '@/types/database';
 import { ObjectId } from 'mongodb';
 
+export const runtime = "nodejs";
+
 interface ReportData {
   timeSeries: {
     label: string; // time point (hour, day, month)

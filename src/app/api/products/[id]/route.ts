@@ -3,6 +3,8 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { Product, ProductResponse, ApiResponse } from '@/types/database';
 
+export const runtime = "nodejs";
+
 // GET - Fetch single product
 export async function GET(
   request: NextRequest,

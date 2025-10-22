@@ -3,6 +3,8 @@ import { connectToDatabase } from '@/lib/mongodb';
 import bcrypt from 'bcryptjs';
 import { User, UserResponse, ApiResponse } from '@/types/database';
 
+export const runtime = "nodejs";
+
 // GET - Fetch all users
 export async function GET() {
   try {

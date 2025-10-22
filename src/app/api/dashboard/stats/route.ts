@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Order, Product, ApiResponse } from '@/types/database';
 
+export const runtime = "nodejs";
 interface DashboardStatsResponse {
   totalOrders: number;
   totalRevenue: number;

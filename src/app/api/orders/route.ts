@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Order, OrderResponse, ApiResponse } from '@/types/database';
 
+export const runtime = "nodejs";
+
 // GET - Fetch orders (with limit and sorting)
 export async function GET(request: NextRequest) {
   try {

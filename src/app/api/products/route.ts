@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Product, ProductResponse, ApiResponse } from '@/types/database';
 
+export const runtime = "nodejs";
+
 // GET - Fetch all products
 export async function GET() {
   try {

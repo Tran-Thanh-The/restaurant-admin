@@ -3,6 +3,8 @@ import { connectToDatabase } from '@/lib/mongodb';
 import bcrypt from 'bcryptjs';
 import { User, UserResponse, ApiResponse } from '@/types/database';
 
+export const runtime = "nodejs";
+
 export async function POST(request: NextRequest) {
   try {
     const { username, password } = await request.json();

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
+export const runtime = "nodejs";
+
 // GET /api/orders/[id] - Lấy chi tiết đơn hàng
 export async function GET(
   request: NextRequest,
