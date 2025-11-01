@@ -96,9 +96,19 @@ export async function PUT(
   const { fullName, role, salary, email, phoneNumber, defaultSchedule, status, password } = body;
   const allowedStatuses = ['probation','active','resigned'] as const;
 
+    console.log('Received update request with password:', password ? '***' : undefined, 'type:', typeof password);
+
+    const { db } = await connectToDatabase();
+  const usersCol = db.collection<{ _id: ObjectId | string; username: string; role: 'admin' | 'manager' | 'staff'; fullName: string; status?: 'probation' | 'active' | 'resigned'; salary?: number; email?: string; phoneNumber?: string; defaultSchedule?: number[]; password?: string; createdAt?: Date | string; updatedAt?: Date | string }>('users');
+    const filter = (
+      ObjectId.isValid(id)
+        ? { $or: [ { _id: new ObjectId(id) }, { _id: id } ] }
+        : { _id: id }
+    ) as Parameters<typeof usersCol.findOne>[0];
+
     const update: Partial<{
       fullName: string;
-      role: 'manager' | 'staff';
+      role: 'admin' | 'manager' | 'staff';
       status: 'probation' | 'active' | 'resigned';
       salary: number;
       email: string;
@@ -108,20 +118,19 @@ export async function PUT(
       updatedAt: Date;
     }> = { updatedAt: new Date() };
     if (typeof fullName === 'string') update.fullName = fullName;
-    if (role && ['manager', 'staff'].includes(role)) update.role = role; // prevent elevating to admin via API
+    // Allow role update for admin, manager, staff - prevent non-admin from becoming admin
+    if (role && ['admin', 'manager', 'staff'].includes(role)) {
+      // Only allow role update if not trying to become admin (unless already admin)
+      const currentUser = await usersCol.findOne(filter);
+      if (currentUser && (role !== 'admin' || currentUser.role === 'admin')) {
+        update.role = role as 'admin' | 'manager' | 'staff';
+      }
+    }
   if (status && (allowedStatuses as readonly string[]).includes(status)) update.status = status as 'probation' | 'active' | 'resigned';
     if (typeof salary === 'number') update.salary = salary;
     if (typeof email === 'string') update.email = email;
     if (typeof phoneNumber === 'string') update.phoneNumber = phoneNumber;
     if (Array.isArray(defaultSchedule)) update.defaultSchedule = defaultSchedule;
-
-    const { db } = await connectToDatabase();
-  const usersCol = db.collection<{ _id: ObjectId | string; username: string; role: 'admin' | 'manager' | 'staff'; fullName: string; status?: 'probation' | 'active' | 'resigned'; salary?: number; email?: string; phoneNumber?: string; defaultSchedule?: number[]; createdAt?: Date | string; updatedAt?: Date | string }>('users');
-    const filter = (
-      ObjectId.isValid(id)
-        ? { $or: [ { _id: new ObjectId(id) }, { _id: id } ] }
-        : { _id: id }
-    ) as Parameters<typeof usersCol.findOne>[0];
 
     // Hash and set new password if provided (overwrite without extra verification)
     if (typeof password === 'string' && password.trim().length > 0) {

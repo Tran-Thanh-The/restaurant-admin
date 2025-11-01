@@ -32,7 +32,7 @@ export default function UsersPage() {
     username: '',
     password: '',
     fullName: '',
-    role: 'staff' as 'manager' | 'staff',
+    role: 'staff' as 'admin' | 'manager' | 'staff',
     status: 'active' as 'probation' | 'active' | 'resigned',
     salary: '',
     email: '',
@@ -96,7 +96,7 @@ export default function UsersPage() {
       username: item.username,
       password: '', // not editable here
       fullName: item.fullName || '',
-      role: (item.role === 'manager' || item.role === 'staff') ? item.role : 'staff',
+      role: item.role, // Keep original role including 'admin'
       status: item.status ?? 'active',
       salary: typeof item.salary === 'number' ? String(item.salary) : '',
       email: item.email || '',
@@ -165,12 +165,13 @@ export default function UsersPage() {
       startLoading('Đang cập nhật...');
       const payload: Partial<{
         fullName: string;
-        role: 'manager' | 'staff';
+        role: 'admin' | 'manager' | 'staff';
         status: 'probation' | 'active' | 'resigned';
         salary: number;
         email: string;
         phoneNumber: string;
         defaultSchedule: number[];
+        password: string;
       }> = {
         fullName: form.fullName,
         salary: form.salary ? Number(form.salary) : undefined,
@@ -178,12 +179,21 @@ export default function UsersPage() {
         phoneNumber: form.phoneNumber || undefined,
         defaultSchedule: form.defaultSchedule,
       };
-      // Only admin can change role via UI
+      // Preserve role - admin can change role, but must send current role if not changing
       if (user?.role === 'admin') {
-        payload.role = form.role;
+        payload.role = form.role === 'manager' || form.role === 'staff' ? form.role : (editingUser.role === 'admin' ? 'admin' : 'staff');
       }
       // Both admin/manager can change status
       payload.status = form.status;
+      
+      // Add password if provided
+      const trimmedPassword = form.password?.trim();
+      if (trimmedPassword && trimmedPassword.length > 0) {
+        payload.password = trimmedPassword;
+        console.log('Sending password update for user:', editingUser.username);
+      }
+      
+      console.log('Update payload:', { ...payload, password: payload.password ? '***' : undefined });
 
       const res = await fetch(`/api/users/${editingUser._id}`, {
         method: 'PUT',
@@ -362,21 +372,22 @@ export default function UsersPage() {
                       <select
                         className="w-full border rounded px-3 py-2"
                         value={form.role}
-                        onChange={(e)=>setForm({...form, role:e.target.value as 'manager'|'staff'})}
+                        onChange={(e)=>setForm({...form, role:e.target.value as 'admin'|'manager'|'staff'})}
                       >
                         {user?.role === 'admin' && <option value="manager">Manager</option>}
                         <option value="staff">Staff</option>
                       </select>
                     </div>
                   )}
-                  {(isEdit && user?.role === 'admin' && editingUser?.role !== 'admin') && (
+                  {(isEdit && user?.role === 'admin') && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Vai trò</label>
                       <select
                         className="w-full border rounded px-3 py-2"
                         value={form.role}
-                        onChange={(e)=>setForm({...form, role:e.target.value as 'manager'|'staff'})}
+                        onChange={(e)=>setForm({...form, role:e.target.value as 'admin'|'manager'|'staff'})}
                       >
+                        {editingUser?.role === 'admin' && <option value="admin">Admin</option>}
                         <option value="manager">Manager</option>
                         <option value="staff">Staff</option>
                       </select>

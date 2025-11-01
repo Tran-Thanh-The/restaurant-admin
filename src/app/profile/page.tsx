@@ -63,23 +63,32 @@ export default function ProfilePage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !data) return;
     setSaving(true);
     startLoading('Đang lưu...');
     try {
       const payload: Partial<{
         fullName: string;
+        role: 'admin' | 'manager' | 'staff';
         email: string;
         phoneNumber: string;
         password: string;
       }> = {
         fullName: form.fullName,
+        role: data.role, // Preserve current role
         email: form.email || undefined,
         phoneNumber: form.phoneNumber || undefined,
       };
-      if (form.password && form.password.trim().length > 0) {
-        payload.password = form.password;
+      
+      // Add password if user entered a new one
+      const trimmedPassword = form.password?.trim();
+      if (trimmedPassword && trimmedPassword.length > 0) {
+        payload.password = trimmedPassword;
+        console.log('Sending password update'); // Debug log
       }
+      
+      console.log('Payload:', { ...payload, password: payload.password ? '***' : undefined }); // Debug log
+      
       const res = await fetch(`/api/users/${user._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

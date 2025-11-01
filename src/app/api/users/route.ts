@@ -16,7 +16,7 @@ export async function GET() {
       username: user.username,
       role: user.role,
       fullName: user.fullName,
-  status: user.status ?? 'active',
+      status: user.status ?? 'active',
       salary: user.salary,
       email: user.email,
       phoneNumber: user.phoneNumber,
