@@ -98,7 +98,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-gray-200">
+          {/* <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-600 text-center mb-3">Tài khoản demo:</p>
             <div className="space-y-2 text-xs text-gray-500">
               <div className="flex justify-between bg-gray-50 px-3 py-2 rounded">
@@ -114,7 +114,7 @@ export default function LoginPage() {
                 <span className="font-mono">staff / staff123</span>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

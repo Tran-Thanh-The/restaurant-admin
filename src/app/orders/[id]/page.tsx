@@ -103,7 +103,7 @@ export default function OrderDetailPage() {
             </table>
           </div>
         </div>
-        {user?.role === 'admin' && (
+        {(user?.role === 'admin' || user?.role === 'manager') && (
           <button
             onClick={handleDelete}
             disabled={deleting}

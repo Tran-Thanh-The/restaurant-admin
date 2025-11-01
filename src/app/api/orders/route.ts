@@ -10,15 +10,24 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const createdBy = searchParams.get('createdBy');
     const limitParam = searchParams.get('limit');
+    const pageParam = searchParams.get('page');
+    
     const limit = limitParam ? parseInt(limitParam, 10) : 10; // Default 10
+    const page = pageParam ? parseInt(pageParam, 10) : 1; // Default page 1
+    const skip = (page - 1) * limit;
 
     const { db } = await connectToDatabase();
     
     const query = createdBy ? { createdBy } : {};
-    // Optimized: sort and limit at database level
+    
+    // Get total count for pagination
+    const total = await db.collection<Order>('orders').countDocuments(query);
+    
+    // Optimized: sort, skip and limit at database level
     const orders = await db.collection<Order>('orders')
       .find(query)
       .sort({ orderAt: -1 }) // Latest first
+      .skip(skip)
       .limit(limit)
       .toArray();
 
@@ -34,6 +43,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json<ApiResponse<OrderResponse[]>>({
       success: true,
       data: orderResponses,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
     });
   } catch (error) {
     console.error('Error fetching orders:', error);

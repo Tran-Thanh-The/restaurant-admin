@@ -44,12 +44,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Only allow login for users in probation or active status
+    const status = user.status ?? 'active';
+    if (!(status === 'probation' || status === 'active')) {
+      return NextResponse.json<ApiResponse>(
+        {
+          success: false,
+          error: 'Tài khoản không được phép đăng nhập',
+        },
+        { status: 403 }
+      );
+    }
+
     // Remove password from response
     const userResponse: UserResponse = {
       _id: user._id!.toString(),
       username: user.username,
       role: user.role,
       fullName: user.fullName,
+      status,
       createdAt: user.createdAt.toISOString(),
       updatedAt: user.updatedAt.toISOString(),
     };

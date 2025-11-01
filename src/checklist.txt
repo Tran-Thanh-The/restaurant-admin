@@ -1,0 +1,43 @@
+Thời điểm mở cửa (17h - 17h30)
+	Kiểm tra nguyên vật liệu, vật tư (cần báo cáo)
+		Kiểm tra xem các vật tư có đủ để phục vụ khách ngày hôm nay hay không? => Vật tư nào thiếu cần nhắn báo vào nhóm
+		Danh sách vật tư cần kiểm tra: Thông tin vật tư (https://docs.google.com/spreadsheets/d/1v3_gz7fwwMYnqS_NqYlC8u2cJLwgo49dkiWD2Nhw29c/edit?gid=2144989111#gid=2144989111)
+	Chuẩn đồ mở quán
+		1. Sắp xếp bàn ghế
+		2. Mang đèn vẫy ra vỉa hè
+		3. Chuẩn bị sẵn bếp, xe đẩy đèn điện
+		4. Bọc túi rác vào các thùng
+	Chuẩn bị đồ ăn
+		1. Lấy các món ăn từ ngăn đông ra xếp vào khay (khoảng 21-24 món, có thể mix món hoặc trùng món)
+		2. Dùng tem đánh dấu hộp đựng món ăn cũ
+		3. Bày ra bàn và chụp lại hình ảnh gửi vào nhóm
+	Đổ thêm nước chấm vào các chai nếu hết
+		1. Pha nước ngọt dạng hộp
+		2. Mang nước ngọt dạng chai ra bàn
+		3. Mang đá ra thùng
+		4. Mang cốc, đĩa, giấy thêm dầu, bát nước chấm ra bàn
+	Kiểm tra tiền mặt tại quán	Đếm tiền mặt tại quán và gửi lại thông tin vào nhóm
+	Khác
+		Nhận đồ từ shipper
+		Kiểm hàng. Trường hợp nhận hàng là món ăn (các gói xiên), nhân viên cần kiểm hàng vào báo lại số lượng.
+Thời điểm trong thời gian bán	
+	Hướng dẫn khách hàng chọn món	Xếp chỗ, hướng dẫn khách hàng vào quán chọn món, chọn gói buffet, chọn và lấy nước chấm
+	Đứng bếp	Nhận món ăn từ khách và thực hiện rán theo hướng dẫn khi đào tạo
+	Rửa bát	Rửa bát theo hướng dẫn
+	Thu ngân	Thực hiện xác thực việc thanh toán từ khách hàng theo hướng dẫn khi đào tạo
+	Mang đồ ăn ra cho khách hàng	Sau khi đầu bếp rán xong, hãy nhờ KH đến lấy thay vì mang đến bàn khách hàng. Trường hợp không nhờ được thì nv sẽ tự mang ra
+	Fill đồ vào vào khay, nước chấm, buffet nước	Khi thấy món ăn trong khay gần hết nv thực hiện việc tiếp thêm đồ vào các khay tương ưng, tương tự của nước, nước chấm
+	Hướng dẫn khách để xe	Các nhân viên sẽ được hướng dẫn khi đào tạo
+"Thời điểm dọn hàng đóng cửa (22h - 22h30)"	
+	Nhận khách sau 22h	Chỉ nhận khách mua mang về
+	Thông báo chuẩn bị đóng cửa	Thông báo cho KH hiện đang còn ăn về việc quán chuẩn bị đóng cửa
+	Rửa bát	Sửa hết hết bát đũa còn lại
+	Kiểm kê lại tiền mặt	Đếm lại tiền mặt trong quán và thực hiện báo lại thông tin vào nhóm
+	Quét dọn, xếp lại bàn ghế ngay ngắn	Làm theo hướng dẫn khi đào tạo
+	Xử lý dầu mỡ thừa, đồ ăn thừa,...	Làm theo hướng dẫn khi đào tạo
+	Đổ rác	Làm theo hướng dẫn khi đào tạo
+	Kiểm kê, rà soát	(cần báo cáo)
+		- Quản lý thực hiện kiểm tra danh sách vật tư `Thông tin vật tư (https://docs.google.com/spreadsheets/d/1v3_gz7fwwMYnqS_NqYlC8u2cJLwgo49dkiWD2Nhw29c/edit?gid=2144989111#gid=2144989111)`
+		- Quản lý ra soát các công việc (đổ rác, rửa bát, kiểm kê, ...) đã được hoàn thành hay chưa
+		- Thực hiện báo lại team theo hướng dẫn khi đào tạo
+	Đóng quán	Đóng quán, kiểm tra khóa từ, ổ điện

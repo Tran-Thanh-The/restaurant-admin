@@ -12,6 +12,7 @@ interface UserItem {
   username: string;
   fullName: string;
   role: 'admin' | 'manager' | 'staff';
+  status?: 'probation' | 'active' | 'resigned';
   salary?: number;
   email?: string;
   phoneNumber?: string;
@@ -32,6 +33,7 @@ export default function UsersPage() {
     password: '',
     fullName: '',
     role: 'staff' as 'manager' | 'staff',
+    status: 'active' as 'probation' | 'active' | 'resigned',
     salary: '',
     email: '',
     phoneNumber: '',
@@ -57,9 +59,9 @@ export default function UsersPage() {
   }, [user]);
   const canEdit = useMemo(() => {
     if (!user) return () => false;
-    return (targetRole: UserItem['role']) => {
-      if (user.role === 'admin') return targetRole !== 'admin';
-      if (user.role === 'manager') return targetRole === 'staff';
+    return (target: UserItem) => {
+      if (user.role === 'admin') return true; // admin can edit all users
+      if (user.role === 'manager') return target.role === 'staff' || target._id === user._id; // manager can edit staff and self
       return false;
     };
   }, [user]);
@@ -80,11 +82,11 @@ export default function UsersPage() {
   const openModal = () => {
     setIsEdit(false);
     setEditingUser(null);
-    setForm({ username: '', password: '', fullName: '', role: 'staff', salary: '', email: '', phoneNumber: '', defaultSchedule: [1,1,1,1,1,0,0] });
+    setForm({ username: '', password: '', fullName: '', role: 'staff', status: 'active', salary: '', email: '', phoneNumber: '', defaultSchedule: [1,1,1,1,1,0,0] });
     setIsModalOpen(true);
   };
   const openEditModal = (item: UserItem) => {
-    if (!canEdit(item.role)) {
+    if (!canEdit(item)) {
       toast.error('Bạn không có quyền sửa user này');
       return;
     }
@@ -94,7 +96,8 @@ export default function UsersPage() {
       username: item.username,
       password: '', // not editable here
       fullName: item.fullName || '',
-      role: item.role === 'admin' ? 'staff' : (item.role as 'manager' | 'staff'), // admin won't be editable anyway
+      role: (item.role === 'manager' || item.role === 'staff') ? item.role : 'staff',
+      status: item.status ?? 'active',
       salary: typeof item.salary === 'number' ? String(item.salary) : '',
       email: item.email || '',
       phoneNumber: item.phoneNumber || '',
@@ -128,6 +131,7 @@ export default function UsersPage() {
           password: form.password,
           fullName: form.fullName,
           role: form.role, // manager or staff (manager will be restricted in UI below)
+          status: form.status,
           salary: form.salary ? Number(form.salary) : undefined,
           email: form.email || undefined,
           phoneNumber: form.phoneNumber || undefined,
@@ -162,6 +166,7 @@ export default function UsersPage() {
       const payload: Partial<{
         fullName: string;
         role: 'manager' | 'staff';
+        status: 'probation' | 'active' | 'resigned';
         salary: number;
         email: string;
         phoneNumber: string;
@@ -177,6 +182,8 @@ export default function UsersPage() {
       if (user?.role === 'admin') {
         payload.role = form.role;
       }
+      // Both admin/manager can change status
+      payload.status = form.status;
 
       const res = await fetch(`/api/users/${editingUser._id}`, {
         method: 'PUT',
@@ -223,6 +230,16 @@ export default function UsersPage() {
   if (!user || user.role === 'staff') return null;
 
   const days = ['T2','T3','T4','T5','T6','T7','CN'];
+  const statusLabel: Record<'probation'|'active'|'resigned', string> = {
+    probation: 'Thử việc',
+    active: 'Đang làm',
+    resigned: 'Đã nghỉ',
+  };
+  const statusClass: Record<'probation'|'active'|'resigned', string> = {
+    probation: 'bg-amber-50 text-amber-700 border-amber-200',
+    active: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    resigned: 'bg-gray-100 text-gray-600 border-gray-200',
+  };
 
   return (
     <ProtectedRoute>
@@ -253,6 +270,7 @@ export default function UsersPage() {
                   <th className="text-left py-3 px-4">Tên đăng nhập</th>
                   <th className="text-left py-3 px-4">Họ tên</th>
                   <th className="text-left py-3 px-4">Vai trò</th>
+                  <th className="text-left py-3 px-4">Trạng thái</th>
                   <th className="text-left py-3 px-4">Email</th>
                   <th className="text-left py-3 px-4">SĐT</th>
                   <th className="text-right py-3 px-4">Lương</th>
@@ -266,6 +284,11 @@ export default function UsersPage() {
                     <td className="py-3 px-4 font-mono">{u.username}</td>
                     <td className="py-3 px-4">{u.fullName}</td>
                     <td className="py-3 px-4 capitalize">{u.role}</td>
+                    <td className="py-3 px-4">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded border text-xs font-medium ${statusClass[(u.status ?? 'active')]}`}>
+                        {statusLabel[(u.status ?? 'active')]}
+                      </span>
+                    </td>
                     <td className="py-3 px-4">{u.email || '-'}</td>
                     <td className="py-3 px-4">{u.phoneNumber || '-'}</td>
                     <td className="py-3 px-4 text-right">{typeof u.salary === 'number' ? u.salary.toLocaleString('vi-VN') : '-'}</td>
@@ -280,7 +303,7 @@ export default function UsersPage() {
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {canEdit(u.role) && (
+                        {canEdit(u) && (
                           <button
                             onClick={() => openEditModal(u)}
                             className="px-3 py-1.5 bg-amber-500 text-white rounded hover:bg-amber-600"
@@ -289,7 +312,7 @@ export default function UsersPage() {
                         {canDelete(u.role) && (
                           <button onClick={() => handleDelete(u)} className="px-3 py-1.5 bg-red-600 text-white rounded hover:bg-red-700">Xóa</button>
                         )}
-                        {!canEdit(u.role) && !canDelete(u.role) && (
+                        {!canEdit(u) && !canDelete(u.role) && (
                           <span className="text-gray-400">-</span>
                         )}
                       </div>
@@ -320,6 +343,12 @@ export default function UsersPage() {
                       </div>
                     </>
                   )}
+                  {isEdit && (
+                    <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu mới (để trống nếu không đổi)</label>
+                      <input type="password" className="w-full border rounded px-3 py-2" value={form.password} onChange={(e)=>setForm({...form, password:e.target.value})} placeholder="Nhập mật khẩu mới" />
+                    </div>
+                  )}
                   <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Họ và tên *</label>
                     <input className="w-full border rounded px-3 py-2" value={form.fullName} onChange={(e)=>setForm({...form, fullName:e.target.value})} required />
@@ -340,7 +369,7 @@ export default function UsersPage() {
                       </select>
                     </div>
                   )}
-                  {(isEdit && user?.role === 'admin') && (
+                  {(isEdit && user?.role === 'admin' && editingUser?.role !== 'admin') && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Vai trò</label>
                       <select
@@ -350,6 +379,21 @@ export default function UsersPage() {
                       >
                         <option value="manager">Manager</option>
                         <option value="staff">Staff</option>
+                      </select>
+                    </div>
+                  )}
+                  {/* Status selection - visible in both create and edit (admin/manager) */}
+                  {(user?.role === 'admin' || user?.role === 'manager') && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
+                      <select
+                        className="w-full border rounded px-3 py-2"
+                        value={form.status}
+                        onChange={(e)=>setForm({...form, status: e.target.value as 'probation'|'active'|'resigned'})}
+                      >
+                        <option value="probation">Thử việc</option>
+                        <option value="active">Đang làm</option>
+                        <option value="resigned">Đã nghỉ</option>
                       </select>
                     </div>
                   )}

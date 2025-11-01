@@ -246,15 +246,14 @@ export default function DashboardPage() {
               role="list"
               aria-label="Danh sách ứng dụng"
             >
-              {/* Products app */}
-              {user?.role === "staff" ? (
-                <div
-                  className="group relative select-none"
-                  aria-disabled
-                  title="Chỉ Admin/Manager được truy cập"
+              {/* Profile app (only for staff) */}
+              {user?.role === "staff" && (
+                <Link
+                  href="/profile"
+                  className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 rounded-2xl"
                 >
-                  <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-gray-50 border border-gray-200 opacity-60 cursor-not-allowed">
-                    <div className="h-14 w-14 rounded-2xl grid place-items-center bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-sm">
+                  <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-white border border-gray-200 hover:border-pink-300 hover:shadow-md transition">
+                    <div className="h-14 w-14 rounded-2xl grid place-items-center bg-gradient-to-br from-pink-400 to-pink-600 text-white shadow-sm group-hover:scale-105 transition">
                       <svg
                         className="w-7 h-7"
                         fill="none"
@@ -265,34 +264,18 @@ export default function DashboardPage() {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 10H6L5 9z"
+                          d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                         />
                       </svg>
                     </div>
-                    <div className="text-center">
-                      <p className="text-sm font-semibold text-gray-600">
-                        Sản phẩm
-                      </p>
-                      <p className="text-xs text-gray-400">Chỉ Admin/Manager</p>
-                    </div>
-                    <div className="absolute top-2 right-2 text-gray-400">
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10 6a2 2 0 114 0v2a2 2 0 11-4 0V6zM6 10v4a4 4 0 004 4h4a4 4 0 004-4v-4"
-                        />
-                      </svg>
-                    </div>
+                    <p className="text-sm font-semibold text-gray-900">
+                      Hồ sơ
+                    </p>
                   </div>
-                </div>
-              ) : (
+                </Link>
+              )}
+              {/* Products app (only for admin/manager) */}
+              {(user?.role === "admin" || user?.role === "manager") && (
                 <Link
                   href="/products"
                   className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-2xl"
@@ -347,53 +330,23 @@ export default function DashboardPage() {
                 </div>
               </Link>
 
-              {/* Users app */}
-              {user?.role === "staff" ? (
-                <div
-                  className="group relative select-none"
-                  aria-disabled
-                  title="Chỉ Admin/Manager được truy cập"
+                {/* Today's Tasks app - available for all */}
+                <Link
+                  href="/checklist"
+                  className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 rounded-2xl"
                 >
-                  <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-gray-50 border border-gray-200 opacity-60 cursor-not-allowed">
-                    <div className="h-14 w-14 rounded-2xl grid place-items-center bg-gradient-to-br from-slate-400 to-slate-600 text-white shadow-sm">
-                      <svg
-                        className="w-7 h-7"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
+                  <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-white border border-gray-200 hover:border-rose-300 hover:shadow-md transition">
+                    <div className="h-14 w-14 rounded-2xl grid place-items-center bg-gradient-to-br from-rose-400 to-rose-600 text-white shadow-sm group-hover:scale-105 transition">
+                      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <div className="text-center">
-                      <p className="text-sm font-semibold text-gray-600">
-                        Người dùng
-                      </p>
-                      <p className="text-xs text-gray-400">Chỉ Admin/Manager</p>
-                    </div>
-                    <div className="absolute top-2 right-2 text-gray-400">
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10 6a2 2 0 114 0v2a2 2 0 11-4 0V6zM6 10v4a4 4 0 004 4h4a4 4 0 004-4v-4"
-                        />
-                      </svg>
-                    </div>
+                    <p className="text-sm font-semibold text-gray-900">Công việc hôm nay</p>
                   </div>
-                </div>
-              ) : (
+                </Link>
+
+              {/* Users app (only for admin/manager) */}
+              {(user?.role === "admin" || user?.role === "manager") && (
                 <Link
                   href="/users"
                   className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 rounded-2xl"
@@ -421,53 +374,8 @@ export default function DashboardPage() {
                 </Link>
               )}
 
-              {/* Reports app */}
-              {user?.role === "staff" ? (
-                <div
-                  className="group relative select-none"
-                  aria-disabled
-                  title="Chỉ Admin/Manager được truy cập"
-                >
-                  <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-gray-50 border border-gray-200 opacity-60 cursor-not-allowed">
-                    <div className="h-14 w-14 rounded-2xl grid place-items-center bg-gradient-to-br from-purple-400 to-purple-600 text-white shadow-sm">
-                      <svg
-                        className="w-7 h-7"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M11 19V6m4 13V10M7 19v-4"
-                        />
-                      </svg>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-sm font-semibold text-gray-600">
-                        Báo cáo
-                      </p>
-                      <p className="text-xs text-gray-400">Chỉ Admin/Manager</p>
-                    </div>
-                    <div className="absolute top-2 right-2 text-gray-400">
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10 6a2 2 0 114 0v2a2 2 0 11-4 0V6zM6 10v4a4 4 0 004 4h4a4 4 0 004-4v-4"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              ) : (
+              {/* Reports app (only for admin/manager) */}
+              {(user?.role === "admin" || user?.role === "manager") && (
                 <Link
                   href="/reports"
                   className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded-2xl"
@@ -490,6 +398,64 @@ export default function DashboardPage() {
                     </div>
                     <p className="text-sm font-semibold text-gray-900">
                       Báo cáo
+                    </p>
+                  </div>
+                </Link>
+              )}
+
+              {/* Suppliers app (only for admin/manager) */}
+              {(user?.role === "admin" || user?.role === "manager") && (
+                <Link
+                  href="/suppliers"
+                  className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 rounded-2xl"
+                >
+                  <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-white border border-gray-200 hover:border-orange-300 hover:shadow-md transition">
+                    <div className="h-14 w-14 rounded-2xl grid place-items-center bg-gradient-to-br from-orange-400 to-orange-600 text-white shadow-sm group-hover:scale-105 transition">
+                      <svg
+                        className="w-7 h-7"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                        />
+                      </svg>
+                    </div>
+                    <p className="text-sm font-semibold text-gray-900">
+                      Nguồn hàng
+                    </p>
+                  </div>
+                </Link>
+              )}
+
+              {/* Purchase Orders app (only for admin/manager) */}
+              {(user?.role === "admin" || user?.role === "manager") && (
+                <Link
+                  href="/purchase-orders"
+                  className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 rounded-2xl"
+                >
+                  <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-white border border-gray-200 hover:border-teal-300 hover:shadow-md transition">
+                    <div className="h-14 w-14 rounded-2xl grid place-items-center bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-sm group-hover:scale-105 transition">
+                      <svg
+                        className="w-7 h-7"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                    </div>
+                    <p className="text-sm font-semibold text-gray-900">
+                      Nhập hàng
                     </p>
                   </div>
                 </Link>

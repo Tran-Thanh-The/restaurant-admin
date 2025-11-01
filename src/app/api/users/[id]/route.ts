@@ -1,9 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
-import { ApiResponse } from '@/types/database';
+import { ApiResponse, User } from '@/types/database';
 
 export const runtime = 'nodejs';
+
+// GET - Get a user by id
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const { db } = await connectToDatabase();
+    const usersCol = db.collection<User>('users');
+    const filter = ObjectId.isValid(id)
+      ? { $or: [{ _id: new ObjectId(id) }, { _id: id }] }
+      : { _id: id };
+  const doc = await usersCol.findOne(filter as Parameters<typeof usersCol.findOne>[0]);
+    if (!doc) {
+      return NextResponse.json<ApiResponse>({ success: false, error: 'User not found' }, { status: 404 });
+    }
+    return NextResponse.json<ApiResponse>({
+      success: true,
+      data: {
+        _id: (doc._id as unknown as ObjectId | string).toString(),
+        username: doc.username,
+        role: doc.role,
+        fullName: doc.fullName,
+        status: (doc as User).status ?? 'active',
+        salary: doc.salary,
+        email: doc.email,
+        phoneNumber: doc.phoneNumber,
+        defaultSchedule: doc.defaultSchedule,
+        createdAt: (doc.createdAt instanceof Date ? doc.createdAt : new Date(doc.createdAt)).toISOString(),
+        updatedAt: (doc.updatedAt instanceof Date ? doc.updatedAt : new Date(doc.updatedAt)).toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    return NextResponse.json<ApiResponse>({ success: false, error: 'Failed to fetch user' }, { status: 500 });
+  }
+}
 
 // DELETE - Remove a user by id
 export async function DELETE(
@@ -54,32 +92,42 @@ export async function PUT(
   try {
     const { id } = await params;
 
-    const body = await request.json();
-    const { fullName, role, salary, email, phoneNumber, defaultSchedule } = body;
+  const body = await request.json();
+  const { fullName, role, salary, email, phoneNumber, defaultSchedule, status, password } = body;
+  const allowedStatuses = ['probation','active','resigned'] as const;
 
     const update: Partial<{
       fullName: string;
       role: 'manager' | 'staff';
+      status: 'probation' | 'active' | 'resigned';
       salary: number;
       email: string;
       phoneNumber: string;
       defaultSchedule: number[];
+      password: string;
       updatedAt: Date;
     }> = { updatedAt: new Date() };
     if (typeof fullName === 'string') update.fullName = fullName;
     if (role && ['manager', 'staff'].includes(role)) update.role = role; // prevent elevating to admin via API
+  if (status && (allowedStatuses as readonly string[]).includes(status)) update.status = status as 'probation' | 'active' | 'resigned';
     if (typeof salary === 'number') update.salary = salary;
     if (typeof email === 'string') update.email = email;
     if (typeof phoneNumber === 'string') update.phoneNumber = phoneNumber;
     if (Array.isArray(defaultSchedule)) update.defaultSchedule = defaultSchedule;
 
     const { db } = await connectToDatabase();
-    const usersCol = db.collection<{ _id: ObjectId | string; username: string; role: 'admin' | 'manager' | 'staff'; fullName: string; salary?: number; email?: string; phoneNumber?: string; defaultSchedule?: number[]; createdAt?: Date | string; updatedAt?: Date | string }>('users');
+  const usersCol = db.collection<{ _id: ObjectId | string; username: string; role: 'admin' | 'manager' | 'staff'; fullName: string; status?: 'probation' | 'active' | 'resigned'; salary?: number; email?: string; phoneNumber?: string; defaultSchedule?: number[]; createdAt?: Date | string; updatedAt?: Date | string }>('users');
     const filter = (
       ObjectId.isValid(id)
         ? { $or: [ { _id: new ObjectId(id) }, { _id: id } ] }
         : { _id: id }
     ) as Parameters<typeof usersCol.findOne>[0];
+
+    // Hash and set new password if provided (overwrite without extra verification)
+    if (typeof password === 'string' && password.trim().length > 0) {
+      const hashed = await (await import('bcryptjs')).hash(password, 10);
+      update.password = hashed;
+    }
 
     const updRes = await usersCol.updateOne(filter, { $set: update });
     if (updRes.matchedCount === 0) {
@@ -97,6 +145,7 @@ export async function PUT(
       role: 'admin' | 'manager' | 'staff';
       fullName: string;
       salary?: number;
+      status?: 'probation' | 'active' | 'resigned';
       email?: string;
       phoneNumber?: string;
       defaultSchedule?: number[];
@@ -108,6 +157,7 @@ export async function PUT(
       username: u.username,
       role: u.role,
       fullName: u.fullName,
+      status: u.status ?? 'active',
       salary: u.salary,
       email: u.email,
       phoneNumber: u.phoneNumber,

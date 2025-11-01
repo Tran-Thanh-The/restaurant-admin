@@ -16,6 +16,7 @@ export async function GET() {
       username: user.username,
       role: user.role,
       fullName: user.fullName,
+  status: user.status ?? 'active',
       salary: user.salary,
       email: user.email,
       phoneNumber: user.phoneNumber,
@@ -44,7 +45,9 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-  const { username, password, role, fullName, salary, email, phoneNumber, defaultSchedule } = body;
+  const { username, password, role, fullName, salary, email, phoneNumber, defaultSchedule, status } = body;
+
+    const allowedStatuses = ['probation','active','resigned'] as const;
 
     if (!username || !password || !role || !fullName) {
       return NextResponse.json<ApiResponse>(
@@ -77,6 +80,7 @@ export async function POST(request: NextRequest) {
       password: hashedPassword,
       role,
       fullName,
+      status: allowedStatuses.includes(status) ? status : 'active',
       salary: typeof salary === 'number' ? salary : undefined,
       email: email || undefined,
       phoneNumber: phoneNumber || undefined,
@@ -92,6 +96,7 @@ export async function POST(request: NextRequest) {
       username: newUser.username,
       role: newUser.role,
       fullName: newUser.fullName,
+      status: newUser.status,
       salary: newUser.salary,
       email: newUser.email,
       phoneNumber: newUser.phoneNumber,

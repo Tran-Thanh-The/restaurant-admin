@@ -26,15 +26,21 @@ export default function OrdersPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const itemsPerPage = 10;
 
-  // Fetch 10 latest orders
+  // Fetch orders with pagination
   useEffect(() => {
     setLoading(true);
-    fetch("/api/orders")
+    fetch(`/api/orders?page=${currentPage}&limit=${itemsPerPage}`)
       .then((res) => res.json())
-      .then((data) => setOrders(data.data || []))
+      .then((data) => {
+        setOrders(data.data || []);
+        setTotalOrders(data.total || 0);
+      })
       .finally(() => setLoading(false));
-  }, [showCreate]);
+  }, [showCreate, currentPage]);
 
   // Init quantities when open create
   useEffect(() => {
@@ -60,7 +66,10 @@ export default function OrdersPage() {
       const prod = products.find((p) => p._id === item.productId);
       if (prod) totalPrice += item.quantity * prod.price;
     });
-    setTotal(Number(totalPrice.toFixed(2)));
+
+    totalPrice = Math.round(totalPrice / 1000) * 1000;
+
+    setTotal(Number(totalPrice));
     // Tạo order
     if (!user) return toast.error("Không xác định người dùng!");
     const startedAt = Date.now();
@@ -69,7 +78,7 @@ export default function OrdersPage() {
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ createdBy: user.username, totalPrice: Number(totalPrice.toFixed(2)) }),
+        body: JSON.stringify({ createdBy: user.username, totalPrice: Number(totalPrice) }),
       });
       const order = await res.json();
       if (!order.success) {
@@ -220,6 +229,7 @@ export default function OrdersPage() {
       const data = await res.json();
       if (data.success) {
         setOrders((prev) => prev.filter((o) => o._id !== id));
+        setTotalOrders((prev) => prev - 1);
         toast.success('Đã xóa đơn hàng');
       } else {
         toast.error('Xóa đơn hàng thất bại');
@@ -228,6 +238,16 @@ export default function OrdersPage() {
       toast.error('Lỗi khi xóa đơn hàng');
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  // Calculate total pages
+  const totalPages = Math.ceil(totalOrders / itemsPerPage);
+
+  // Handle page change
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
     }
   };
 
@@ -270,15 +290,12 @@ export default function OrdersPage() {
               {orders.map((order) => (
                 <li
                   key={order._id}
-                  className="py-3 flex justify-between items-center"
+                  className="py-3 flex justify-between items-center gap-3"
                 >
-                  <div>
-                    <button
-                      className="font-semibold text-blue-700 hover:underline text-left"
-                      onClick={() => router.push(`/orders/${order._id}`)}
-                    >
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-900">
                       Mã đơn: {order._id}
-                    </button>
+                    </div>
                     <div className="text-sm text-gray-500">
                       Thời gian: {new Date(order.orderAt).toLocaleString()}
                     </div>
@@ -289,20 +306,87 @@ export default function OrdersPage() {
                       Tổng đơn giá: <span className="font-semibold text-blue-600">{typeof order.totalPrice === 'number' ? order.totalPrice.toLocaleString() : '-'} ₫</span>
                     </div>
                   </div>
-                  {user?.role === 'admin' && (
+                  <div className="flex items-center gap-2">
                     <button
-                      className="ml-4 px-3 py-2 bg-red-600 text-white rounded-lg font-semibold text-sm disabled:opacity-60"
-                      onClick={() => handleDelete(order._id)}
-                      disabled={deletingId === order._id}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors"
+                      onClick={() => router.push(`/orders/${order._id}`)}
                     >
-                      {deletingId === order._id ? 'Đang xóa...' : 'Xóa'}
+                      Xem
                     </button>
-                  )}
+                    {(user?.role === 'admin' || user?.role === 'manager') && (
+                      <button
+                        className="px-3 py-2 bg-red-600 text-white rounded-lg font-semibold text-sm disabled:opacity-60 hover:bg-red-700 transition-colors"
+                        onClick={() => handleDelete(order._id)}
+                        disabled={deletingId === order._id}
+                      >
+                        {deletingId === order._id ? 'Đang xóa...' : 'Xóa'}
+                      </button>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </div>
+        
+        {/* Pagination Controls */}
+        {!loading && orders.length > 0 && totalPages > 1 && (
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              onClick={() => goToPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="w-full sm:w-auto px-4 py-2 bg-white border rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+            >
+              ← Trước
+            </button>
+            
+            <div className="flex items-center gap-1 flex-wrap justify-center">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                // Show first page, last page, current page, and pages around current
+                if (
+                  page === 1 ||
+                  page === totalPages ||
+                  (page >= currentPage - 1 && page <= currentPage + 1)
+                ) {
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => goToPage(page)}
+                      className={`px-3 py-2 sm:px-4 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
+                        currentPage === page
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-white border hover:bg-gray-50'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  );
+                } else if (
+                  page === currentPage - 2 ||
+                  page === currentPage + 2
+                ) {
+                  return <span key={page} className="px-1 sm:px-2 text-gray-500">...</span>;
+                }
+                return null;
+              })}
+            </div>
+
+            <button
+              onClick={() => goToPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="w-full sm:w-auto px-4 py-2 bg-white border rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+            >
+              Sau →
+            </button>
+          </div>
+        )}
+
+        {/* Page info */}
+        {!loading && orders.length > 0 && (
+          <div className="mt-4 text-center text-xs sm:text-sm text-gray-600">
+            Trang {currentPage} / {totalPages} • Tổng {totalOrders} đơn hàng
+          </div>
+        )}
       </div>
     </div>
   );
