@@ -330,20 +330,54 @@ export default function DashboardPage() {
                 </div>
               </Link>
 
-                {/* Today's Tasks app - available for all */}
-                <Link
-                  href="/checklist"
-                  className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 rounded-2xl"
-                >
-                  <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-white border border-gray-200 hover:border-rose-300 hover:shadow-md transition">
-                    <div className="h-14 w-14 rounded-2xl grid place-items-center bg-gradient-to-br from-rose-400 to-rose-600 text-white shadow-sm group-hover:scale-105 transition">
-                      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <p className="text-sm font-semibold text-gray-900">Công việc hôm nay</p>
+              {/* Today's Tasks app - available for all */}
+              <Link
+                href="/checklist"
+                className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 rounded-2xl"
+              >
+                <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-white border border-gray-200 hover:border-rose-300 hover:shadow-md transition">
+                  <div className="h-14 w-14 rounded-2xl grid place-items-center bg-gradient-to-br from-rose-400 to-rose-600 text-white shadow-sm group-hover:scale-105 transition">
+                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                   </div>
-                </Link>
+                  <p className="text-sm font-semibold text-gray-900">Công việc hôm nay</p>
+                </div>
+              </Link>
+
+              {/* Work Schedule app - available for all (Google Sheets) */}
+              <a
+                href="https://docs.google.com/spreadsheets/d/1TJn8HoBObukce_Zkn3zyfITlBbMM-kShCVLIq9YutKw/edit?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-2xl"
+              >
+                <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-white border border-gray-200 hover:border-indigo-300 hover:shadow-md transition">
+                  <div className="h-14 w-14 rounded-2xl grid place-items-center bg-gradient-to-br from-indigo-400 to-indigo-600 text-white shadow-sm group-hover:scale-105 transition">
+                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <p className="text-sm font-semibold text-gray-900">Lịch làm việc</p>
+                </div>
+              </a>
+
+              {/* Inventory Check app - available for all (Google Sheets) */}
+              <a
+                href="https://docs.google.com/spreadsheets/d/1TjbY08m5SNIHe53dBzFR-v9_BTqZKcl8/edit?usp=drivesdk&ouid=117634004023441165320&rtpof=true&sd=true"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 rounded-2xl"
+              >
+                <div className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-white border border-gray-200 hover:border-cyan-300 hover:shadow-md transition">
+                  <div className="h-14 w-14 rounded-2xl grid place-items-center bg-gradient-to-br from-cyan-400 to-cyan-600 text-white shadow-sm group-hover:scale-105 transition">
+                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                  </div>
+                  <p className="text-sm font-semibold text-gray-900">Kiểm kho</p>
+                </div>
+              </a>
 
               {/* Users app (only for admin/manager) */}
               {(user?.role === "admin" || user?.role === "manager") && (
