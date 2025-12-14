@@ -331,7 +331,7 @@ export default function DashboardPage() {
               </Link>
 
               {/* Today's Tasks app - available for all */}
-              <Link
+              {/* <Link
                 href="/checklist"
                 className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 rounded-2xl"
               >
@@ -343,7 +343,7 @@ export default function DashboardPage() {
                   </div>
                   <p className="text-sm font-semibold text-gray-900">Công việc hôm nay</p>
                 </div>
-              </Link>
+              </Link> */}
 
               {/* Work Schedule app - available for all (Google Sheets) */}
               <a
@@ -364,7 +364,7 @@ export default function DashboardPage() {
 
               {/* Inventory Check app - available for all (Google Sheets) */}
               <a
-                href="https://docs.google.com/spreadsheets/d/1TjbY08m5SNIHe53dBzFR-v9_BTqZKcl8/edit?usp=drivesdk&ouid=117634004023441165320&rtpof=true&sd=true"
+                href="https://docs.google.com/spreadsheets/d/1PICt4mNbiK97hR5lc79Bxlf7xyukMPbPcUoprz9_Gm8/edit?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 rounded-2xl"
